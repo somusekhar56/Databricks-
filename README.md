@@ -187,3 +187,57 @@ Undo changes using Revision History
 Compare old and new versions
 
 Restore previous versions anytime
+
+# 3. Cluster Creation
+# 3.1 Cluster Configuration
+# Key configuration settings:
+Databricks Runtime version
+Python version
+
+Auto-termination time
+
+Worker node and driver specs
+
+Cluster size (min/max nodes)
+
+# 3.2 Cluster Type
+
+| **Cluster Type**             | **Use Case**                                                                                                       |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Standard Cluster**         | Multi-purpose cluster used for general Spark computations such as ETL, data processing, and analytics              |
+| **High Concurrency Cluster** | Shared cluster used by multiple users simultaneously, optimized for handling many concurrent queries and workloads |
+
+# 3.3 Worker Node Types
+Workers determine compute power. Options vary by cloud provider:
+
+# Examples:
+Memory Optimized
+
+Compute Optimized
+
+GPU Accelerated
+
+# Node specs affect:
+Speed of operations
+
+Cost
+
+Performance on large datasets
+# 3.4 Auto Scaling Options
+Auto scaling allows Databricks to adjust cluster size automatically based on workload.
+
+# Benefits:
+Reduced cost during low usage
+
+Increased speed during load spikes
+
+Fully managed scaling logic
+
+# Configuration:
+
+Set Min Workers
+
+Set Max Workers
+
+Databricks adds or removes nodes automatically
+
