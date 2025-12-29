@@ -241,3 +241,118 @@ Set Max Workers
 
 Databricks adds or removes nodes automatically
 
+# 4. dbutils Command
+dbutils is a Databricks utility command used to interact with files, notebooks, libraries, widgets, and secrets.
+
+# 4.1 Overview of dbutils
+# dbutils provides helper functions for:
+
+File operations (copy, move, create, delete)
+
+Notebook workflows (run notebooks, exit, pass values)
+
+Library installation
+
+Widgets (text, dropdown, multiselect)
+
+Secrets handling
+# 4.2 Accessing dbutils in Notebooks
+# You can call dbutils directly:
+
+dbutils.fs.ls("/databricks-datasets")
+
+# In SQL notebooks:
+
+-- Use Python command
+
+%python
+
+files = dbutils.fs.ls("/mnt/data")
+
+# Why we use it?
+To automate tasks and perform system-level operations inside notebooks.
+
+# Where we use it?
+Interaction with DBFS
+
+Triggering other notebooks
+
+Creating widgets
+
+Installing libraries
+
+Runtime utilities
+# 4.3 Common dbutils Commands
+
+| **Category** | **Command**                     | **Description**                     |
+| ------------ | ------------------------------- | ----------------------------------- |
+| FS           | `dbutils.fs.ls(path)`           | List files                          |
+| FS           | `dbutils.fs.mkdirs(path)`       | Create directory                    |
+| FS           | `dbutils.fs.rm(path, True)`     | Delete files or folders recursively |
+| FS           | `dbutils.fs.cp(src, dst, True)` | Copy files or folders               |
+| Notebook     | `dbutils.notebook.run()`        | Run another notebook                |
+| Notebook     | `dbutils.notebook.exit()`       | Return value from notebook          |
+| Widgets      | `dbutils.widgets.text()`        | Create text widget                  |
+| Widgets      | `dbutils.widgets.get()`         | Read widget value                   |
+
+# 1.4 dbutils.fs (File System Operations)
+Definition Used to interact with files and directories in DBFS.
+
+# Why use?
+To read, write, delete, move files. Example:
+
+# List files in a directory
+
+dbutils.fs.ls("/")
+
+# Create directory
+
+dbutils.fs.mkdirs("/mnt/data")
+
+# Remove directory/file
+
+dbutils.fs.rm("/mnt/data", True)
+
+# 1.5 dbutils.notebook (Notebook Operations)
+
+Definition Used to call and manage other notebooks.
+
+# Why use?
+Creating pipelines
+
+Notebook chaining
+
+Reusing logic
+
+# Example:
+
+print(result)
+
+# 1.6 dbutils.library (Library Operations)
+
+Definition Used to install and manage external libraries at runtime. Why use?
+
+To dynamically add libraries needed in a notebook.
+
+# Example:
+dbutils.library.installPyPI("pandas")
+
+dbutils.library.restartPython()
+
+# 1.7 dbutils.widgets (Widget Operations)
+
+Definition Used to add input widgets in a notebook UI.
+
+# Why use?
+
+Parameterization
+
+Interactive dashboards
+
+# Example:
+dbutils.widgets.text("input_val", "default_value", "Enter something")
+
+dbutils.widgets.get("input_val")
+
+
+
