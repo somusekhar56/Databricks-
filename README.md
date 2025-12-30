@@ -354,5 +354,159 @@ dbutils.widgets.text("input_val", "default_value", "Enter something")
 
 dbutils.widgets.get("input_val")
 
+# 5. Example Usages
+5.1 Uploading and Downloading Files
+
+Uploading via UI:
+
+Data → Add Data → Upload
+
+Programmatically:
+
+# Upload from local not allowed via code directly, but once uploaded you can move
+
+Download:
+
+# Export file from DBFS to local (Databricks UI → DBFS File Browser)
+
+# 5.2 Running External Notebooks
+out = dbutils.notebook.run("/Shared/PrepData", 120, {"input": "/mnt/raw/data.csv"})
+
+print(out)
+
+# 5.3 Installing and Managing Libraries
+
+Notebook-scoped installation:
+
+%pip install numpy
+
+Cluster-level installation:
+
+Compute → Libraries → Install from PyPI/Maven/JAR/Wheel
+
+# 5.4 Interacting with Widgets
+
+Example of using widget value in query:
+
+input_path = dbutils.widgets.get("input_path")
+
+df = spark.read.csv(input_path)
+
+df.show()
+
+# 6. Read and Write in DBFS Path
+
+# 6.1 Introduction to DBFS
+
+DBFS = Databricks File System
+
+A distributed file system
+
+Mounted on cloud storage (S3/ADLS/GCS)
+
+You can access paths such as:
+
+/dbfs/...
+
+/mnt/... (mounted external storage)
+
+dbfs:/... (URI)
+
+# 6.2 Overview of DBFS
+
+Two access types:
+
+DBFS root → /dbfs, ephemeral for some clusters
+
+Mounted storage → persistent paths via /mnt/...
+
+# 6.3 Mount Points
+
+Mounting external storage:
+
+dbutils.fs.mount(
+
+    source="wasbs://container@storage.blob.core.windows.net/",
+    
+    mount_point="/mnt/data",
+    
+    extra_configs={"fs.azure.account.key.storage.blob.core.windows.net": key}
+)
+List mounts:
+
+dbutils.fs.mounts()
+
+# 6.4 Reading Data from DBFS
+
+df = spark.read.csv("/mnt/raw/data.csv", header=True)
+
+df.show()
+
+# 6.5 Reading CSV/Parquet Files
+
+CSV
+
+df = spark.read.option("header", True).csv("dbfs:/mnt/raw/employees.csv")
+
+Parquet
+
+df = spark.read.parquet("dbfs:/mnt/processed/data.parquet")
+
+# 6.6 Writing Data to DBFS
+
+Use Spark DataFrame write operations:
+
+df.write.mode("overwrite").csv("dbfs:/mnt/output/csv_folder")
+
+df.write.mode("overwrite").parquet("dbfs:/mnt/output/parquet_folder")
+
+# 6.7 Writing CSV/Parquet Files
+
+Writing CSV
+
+df.write.option("header", True).mode("overwrite").csv("dbfs:/mnt/data/employees_csv")
+
+Writing Parquet
+
+df.write.mode("overwrite").parquet("dbfs:/mnt/data/employees_parquet")
+
+# 6.8 Commands for Writing CSV and Parquet Files
+
+CSV Write Commands
+
+df.write.option("header", True).csv("dbfs:/mnt/csv_output")
+
+Parquet Write Commands
+
+df.write.parquet("dbfs:/mnt/parquet_output")
+
+# 6.9 Writing Other File Formats
+
+JSON
+
+df.write.json("dbfs:/mnt/json_output")
+
+Delta
+
+df.write.format("delta").save("dbfs:/mnt/delta_output")
+
+Avro
+
+df.write.format("avro").save("dbfs:/mnt/avro_output")
+
+# 6.10 Commands for Writing Various File Formats
+
+| **Format**  | **Command**                           |
+| ----------- | ------------------------------------- |
+| **CSV**     | `df.write.csv(path)`                  |
+| **Parquet** | `df.write.parquet(path)`              |
+| **JSON**    | `df.write.json(path)`                 |
+| **Delta**   | `df.write.format("delta").save(path)` |
+| **Avro**    | `df.write.format("avro").save(path)`  |
+
+
+
+
+
 
 
