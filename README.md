@@ -504,6 +504,163 @@ df.write.format("avro").save("dbfs:/mnt/avro_output")
 | **Delta**   | `df.write.format("delta").save(path)` |
 | **Avro**    | `df.write.format("avro").save(path)`  |
 
+# 1. Medallion Architecture
+1.1 Introduction to Medallion
+
+Medallion Architecture is a data design pattern used in data lakes to organize data into multiple structured layers:
+
+Bronze Layer – Raw data (unprocessed)
+
+Silver Layer – Cleaned, validated, and enriched data
+
+Gold Layer – Business-level aggregated data used for reporting
+
+# Why Medallion Architecture?
+
+Better data quality at every stage
+
+Easier debugging and traceability
+
+Clear separation between raw and business-ready data
+
+# Flow
+Source Systems → Bronze → Silver → Gold → BI/Analytics
+
+# Example Scenario
+
+Assume you are receiving daily sales CSV files:
+
+Bronze: Load raw CSV files into Delta tables.
+
+Silver: Remove duplicates, handle missing values, standardize formats.
+
+Gold: Aggregate total sales per region/group for reporting or dashboards.
+
+# 1.2 Use Cases and Applications
+
+# Use Cases
+Enterprise Data Lake modernization
+
+ML feature data preparation
+
+Incremental pipelines
+
+Slowly Changing Dimensions
+
+Stream + Batch processing
+
+# Real Applications
+Generating sales dashboards
+
+Feeding ML models from enriched data
+
+Customer analytics and segmentation
+
+Finance misreporting audits
+
+# 2. Delta Lake (Theory)
+# 2.1 Introduction to Delta Lake
+Delta Lake is a storage layer built on top of data lakes (like S3/ADLS/DBFS) that provides:
+ACID transactions
+
+Schema enforcement
+
+Time Travel
+
+Data reliability
+
+It is widely used in Databricks for scalable data pipelines.
+
+# 2.2 ACID Transactions
+# ACID stands for:
+
+Atomicity – All operations succeed or fail together
+
+Consistency – Data always remains valid
+
+Isolation – Concurrent writes never corrupt data
+
+Durability – Once written, data is permanent
+
+# Example
+df.write.format("delta").mode("append").save("/mnt/sales")
+
+Even if the job fails midway, your Delta table won't become corrupted due to ACID guarantees.
+
+# 2.3 Time Travel
+
+Time Travel allows querying older versions of a Delta table.
+
+# Example
+SELECT * FROM sales_table VERSION AS OF 4;
+
+
+# or using timestamp:
+
+SELECT * FROM sales_table TIMESTAMP AS OF '2024-11-21';
+
+This is useful for:
+
+Auditing
+
+Comparing old data
+
+Recovering deleted data
+
+# 2.4 Delta Table
+A Delta Table is stored like a normal directory but with a structured transaction log.
+
+# Example
+spark.sql("""
+
+CREATE TABLE sales_delta
+
+USING DELTA
+
+AS SELECT * FROM sales_raw
+
+""")
+
+# 2.5 Delta Log
+
+Every Delta table maintains a _delta_log directory that stores:
+
+Metadata
+
+Schema history
+
+Commit logs
+
+File actions and snapshots
+
+This enables ACID and Time Travel features.
+
+# 2.6 Usage and Benefits
+# Benefits
+Consistent and correct data
+
+Scalable for large datasets
+
+Supports both streaming and batch
+
+Auto indexing for faster read
+
+# Typical Use in ETL
+bronze_df.write.format("delta").save("/mnt/bronze")
+
+silver_df.write.format("delta").save("/mnt/silver")
+
+gold_df.write.format("delta").save("/mnt/gold")
+
+# 2.7 Schema Evolution
+Delta supports evolving schema dynamically.
+
+# Example
+df.write.option("mergeSchema", "true").format("delta").save("/mnt/sales")
+
+If new columns arrive, the table updates without failure.
+
+
 
 
 
