@@ -660,6 +660,66 @@ df.write.option("mergeSchema", "true").format("delta").save("/mnt/sales")
 
 If new columns arrive, the table updates without failure.
 
+# 3. Advanced Topics
+# 3.1 Lakeflow Connect
+Lakeflow Connect helps in moving external data sources into Databricks pipelines.
+
+# 3.1.1 Upload Files
+
+You can manually upload files from:
+
+UI
+
+CLI
+
+Mounted storage sources
+# Example:
+
+dbfs cp sales.csv dbfs:/mnt/raw/
+
+# 3.1.2 Managed Connectors
+
+These are connectors maintained by Databricks, such as:
+
+Salesforce
+
+Azure SQL
+
+Postgres
+
+AWS RDS
+
+They provide reliability and secure integration.
+
+# 3.1.3 Standard Connectors
+Community or open-source connectors used for:
+
+File transfers
+
+API ingestion
+
+Traditional ETL movement
+
+# 3.1.4 Data Formats Supported
+CSV
+
+JSON
+
+Parquet
+
+Avro
+
+ORC
+
+Delta
+
+# Example Read
+df = spark.read.format("csv").option("header", "true").load("/mnt/raw/sales.csv")
+# 3.1.5 Migrate to Delta Table
+You can convert existing tables to Delta:
+
+spark.sql("CONVERT TO DELTA sales_parquet")
+
 
 
 
