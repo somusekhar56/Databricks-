@@ -720,6 +720,286 @@ You can convert existing tables to Delta:
 
 spark.sql("CONVERT TO DELTA sales_parquet")
 
+# 1.2 Delta Lake (Advanced)
+Delta Lake is a transactional storage layer enabling reliability, performance and governance for large-scale data lakes.
+
+# 1.2.1 Delta Operations
+
+| **Operation** | **Description**                                  |
+| ------------- | ------------------------------------------------ |
+| **UPDATE**    | Modify existing rows in a Delta table            |
+| **DELETE**    | Remove rows from a Delta table                   |
+| **MERGE**     | Perform upsert operations (insert + update)      |
+| **OPTIMIZE**  | Compact small files to improve query performance |
+| **VACUUM**    | Clean up old, unreferenced data files            |
+| **RESTORE**   | Revert a Delta table to an older version         |
+| **GENERATE**  | Create new computed columns                      |
+| **CLONE**     | Create shallow or deep copies of a Delta table   |
+
+# 1.2.2 Data Layout Optimization
+#  Liquid Clustering
+
+# Replaces manual partitioning. Benefits:
+
+No need to choose partitions
+
+Faster writes
+
+Automatic data organization
+
+Better file compaction
+
+Reduced small-file problems
+
+# Data Skipping
+Delta stores min/max statistics for file pruning.
+
+Only relevant files are scanned
+
+Significant performance boosts
+#  File Size Tuning
+# Use:
+
+OPTIMIZE tableName;
+
+Creates ~1GB compact files → faster scan + improved parallelism.
+
+# Partitioned Tables
+# Still useful for:
+
+Very large datasets
+
+Common filter columns (e.g., date, country)
+
+# 1.2.3 Schema Enforcement & Evolution
+✔ Schema Enforcement
+
+Prevents invalid data. Example: writing a STRING into INT column → write fails.
+
+✔ Schema Evolution
+
+Automatically adds new columns when allowed.
+
+# SQL:
+
+ALTER TABLE sales ADD COLUMNS (region STRING);
+
+During write:
+
+df.write.option("mergeSchema", "true").format("delta").mode("append").save(path)
+
+# 1.2.4 Delta Table Features
+#  Change Data Feed (CDF)
+
+Tracks row‑level inserts, updates, deletes.
+
+# Used for:
+
+CDC pipelines
+
+Downstream sync jobs
+
+Incremental ETL
+# Table Constraints
+ALTER TABLE customers ADD CONSTRAINT valid_age CHECK(age > 0);
+#  Generated Columns
+created_date DATE GENERATED ALWAYS AS (to_date(timestamp)) STORED
+
+Useful for: event-time, partitioning, keys.
+
+#  Row Tracking
+Stores row identity & lineage → helps deduplication and change tracking.
+
+#  Type Widening
+Automatic safe conversions:
+
+INT → BIGINT
+
+FLOAT → DOUBLE
+
+STRING length expansion
+
+# 1.3 Structured Streaming (Advanced)
+
+Structured Streaming processes real‑time data with exactly-once guarantees.
+
+Advanced Features
+
+Auto Loader support
+
+Checkpointing & recovery
+
+Watermarking
+
+Stateful aggregations
+
+Streaming MERGE into Delta
+
+Trigger intervals (Trigger.Once, ProcessingTime)
+
+Unified batch + streaming pipelines (Delta tables)
+# Example:
+
+df = spark.readStream.format("cloudFiles").option("cloudFiles.format", "json").load("/mnt/input")
+
+df.writeStream.format("delta").option("checkpointLocation", "/mnt/chkpt").start("/mnt/output")
+
+# 1.4 Data Governance with Unity Catalog
+
+Unity Catalog offers centralized governance across Databricks workspaces.
+
+# Features
+Central metastore
+
+Row/column level security
+
+Data lineage (graph-based UI)
+
+Tagging (PII, sensitive fields)
+
+Credential passthrough
+
+Audit logging
+
+Fine‑grained permissions
+
+# Governed assets include:
+
+Tables
+
+Views
+
+Volumes
+
+Functions
+
+ML models
+
+Notebooks
+
+Dashboards
+# 1.5 Unity Catalog (Deep Summary)
+
+# Unity Catalog uses a 3‑level namespace:
+
+catalog.schema.table
+# Examples
+main.sales.customers
+
+prod.finance.transactions
+
+dev.marketing.clicks
+# Benefits
+Multi-cloud governance
+
+Secure sharing (Delta Sharing)
+
+Central metadata repository
+
+Lineage across jobs, notebooks, dashboards
+
+Supports MLflow, Repos, Delta Live Tables
+# Why Important?
+Foundation for enterprise data governance
+
+Organizes all Lakehouse assets
+
+Required for production-grade security
+
+# 1. Catalog Explorer
+Catalog Explorer is a Databricks UI feature used to navigate, manage, and govern data assets inside Unity Catalog.
+
+# It provides a visual interface to browse:
+
+Metastores
+
+Catalogs
+
+Schemas
+
+Tables (Managed, External, Delta)
+
+Views
+
+Volumes
+
+Functions
+
+Models
+# 1.1 Key Features of Catalog Explorer
+✔ Centralized Data Discovery
+
+Browse all data assets across workspaces under Unity Catalog.
+
+✔ Real-Time Data Lineage
+
+# Shows column-level lineage tracing:
+
+Notebooks → Tables → Dashboards → Jobs
+
+✔ Permissions & Access Control
+
+# Allows assigning:
+
+SELECT
+
+MODIFY
+
+OWNERSHIP
+
+EXECUTE
+
+# Example SQL:
+
+GRANT SELECT ON TABLE main.sales.customers TO user somu;
+
+✔ Data Preview & Sample Querying
+
+# You can:
+
+Preview table data
+
+View schema
+
+View table properties
+
+Generate sample queries automatically
+
+✔ Audit & Governance Support
+# Shows:
+
+Who created data
+
+Recent modifications
+
+Data classification tags (PII, Sensitive)
+
+# 1.2 Structure in Catalog Explorer
+
+Unity Catalog uses a three-level namespace:
+
+catalog.schema.table
+
+# Examples:
+
+main.sales.orders
+
+prod.finance.transactions
+
+dev.marketing.campaigns
+# 1.3 Why Catalog Explorer Is Important
+
+Single governance plane for all data
+
+Makes data discovery easier
+
+Ensures security & compliance
+
+Essential for enterprise Lakehouse governance
+
+
+
+
 
 
 
